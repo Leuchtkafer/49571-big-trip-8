@@ -1,5 +1,6 @@
 import makeFilter from './make-filter.js';
 import makePoint from './make-point.js';
+import {getPoint} from './point.js';
 
 const tripFilter = document.querySelector(`.trip-filter`);
 const tripPoints = document.querySelector(`.trip-day__items`);
@@ -21,7 +22,7 @@ const renderHtmlString = (parentNode, htmlString) => {
 const renderPoint = (number = Math.floor(Math.random() * 10)) => {
   const randomPointsArray = [];
   while (randomPointsArray.length < number) {
-    randomPointsArray.push(makePoint());
+    randomPointsArray.push(makePoint(getPoint()));
   }
   return randomPointsArray;
 };
