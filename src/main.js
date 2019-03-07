@@ -1,42 +1,45 @@
 import makeFilter from './make-filter.js';
-import makePoint from './make-point.js';
-import {getPoint} from './point.js';
+import {getPoint} from './data.js';
+import {Point} from './point.js';
+import {PointEdit} from './point-edit.js';
+import {renderHtmlString, getRandom} from './utils.js';
 
 const tripFilter = document.querySelector(`.trip-filter`);
 const tripPoints = document.querySelector(`.trip-day__items`);
-const pointNumber = 7;
 const filtersArray = [`everything`, `future`, `past`];
 
 const renderFilters = filtersArray.map((item) => makeFilter(item)).join(``);
 
-const renderHtmlString = (parentNode, htmlString) => {
-  const parser = new DOMParser();
-  const html = parser.parseFromString(htmlString, `text/html`);
-  const fragment = document.createDocumentFragment();
-  html.body.childNodes.forEach((node) => {
-    fragment.appendChild(node);
-  });
-  parentNode.appendChild(fragment);
+const createPoint = (data) => {
+  const point = new Point(getPoint(data));
+  const pointEdit = new PointEdit(getPoint(data));
+
+  tripPoints.appendChild(point.render());
+
+  point.onEdit = () => {
+    pointEdit.render();
+    tripPoints.replaceChild(pointEdit.element, point.element);
+    point.unrender();
+  };
+  pointEdit.onSubmit = () => {
+    point.render();
+    tripPoints.replaceChild(point.element, pointEdit.element);
+    pointEdit.unrender();
+  };
 };
 
-const renderPoint = (number = Math.floor(Math.random() * 10)) => {
-  const randomPointsArray = [];
-  while (randomPointsArray.length < number) {
-    randomPointsArray.push(makePoint(getPoint()));
+const addPoints = (number) => {
+  for (let i = 0; i < number; i++) {
+    createPoint(getPoint());
   }
-  return randomPointsArray;
-};
-
-const uploadPoints = () => {
-  tripPoints.innerHTML = ` `;
-  renderHtmlString(tripPoints, renderPoint().join(``));
 };
 
 tripFilter.onclick = (event) => {
   if (event.target.className === `trip-filter__item`) {
-    uploadPoints();
+    tripPoints.innerHTML = ``;
+    addPoints(getRandom());
   }
 };
 
 renderHtmlString(tripFilter, renderFilters);
-renderHtmlString(tripPoints, renderPoint(pointNumber).join(` `));
+addPoints(getRandom());
