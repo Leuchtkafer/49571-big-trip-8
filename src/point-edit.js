@@ -1,7 +1,8 @@
-import {createElement} from './utils.js';
+import {Component} from './component.js';
 
-export class PointEdit {
+export class PointEdit extends Component {
   constructor(data) {
+    super();
     this._type = data.type;
     this._city = data.city;
     this._offers = data.offers;
@@ -10,7 +11,6 @@ export class PointEdit {
     this._date = data.date;
     this._time = data.time;
     this._price = data.price;
-    this._element = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
     this._onSubmit = null;
   }
@@ -22,9 +22,6 @@ export class PointEdit {
   }
   set onSubmit(fn) {
     this._onSubmit = fn;
-  }
-  get element() {
-    return this._element;
   }
   get template() {
     return `<article class="point">
@@ -143,15 +140,6 @@ export class PointEdit {
   bind() {
     this._element.querySelector(`.point__button.point__button--save`).addEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.point__button`).addEventListener(`reset`, this._onSubmitButtonClick);
-  }
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-  unrender() {
-    this.unbind();
-    this._element = null;
   }
   unbind() {
     this._element.querySelector(`.point__button.point__button--save`).removeEventListener(`submit`, this._onSubmitButtonClick);
