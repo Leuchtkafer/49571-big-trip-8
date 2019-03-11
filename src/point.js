@@ -1,7 +1,8 @@
-import {createElement} from './utils.js';
+import {Component} from './component.js';
 
-export class Point {
+export class Point extends Component {
   constructor(data) {
+    super();
     this._type = data.type;
     this._city = data.city;
     this._offers = data.offers;
@@ -10,7 +11,6 @@ export class Point {
     this._date = data.date;
     this._time = data.time;
     this._price = data.price;
-    this._element = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
 
     this._onEdit = null;
@@ -19,9 +19,6 @@ export class Point {
     if (typeof this._onEdit === `function`) {
       this._onEdit();
     }
-  }
-  get element() {
-    return this._element;
   }
   set onEdit(fn) {
     this._onEdit = fn;
@@ -45,19 +42,7 @@ export class Point {
   bind() {
     this._element.addEventListener(`click`, this._onEditButtonClick);
   }
-
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-
   unbind() {
     this._element.removeEventListener(`click`, this._onEditButtonClick);
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
   }
 }
