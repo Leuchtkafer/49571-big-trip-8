@@ -11,6 +11,8 @@ export class Point {
     this._time = data.time;
     this._price = data.price;
     this._element = null;
+    this._onEditButtonClick = this._onEditButtonClick.bind(this);
+
     this._onEdit = null;
   }
   _onEditButtonClick() {
@@ -41,8 +43,7 @@ export class Point {
         </article>`;
   }
   bind() {
-    this._element.querySelector(`.trip-point`)
-      .addEventListener(`click`, this._onEditButtonClick.bind(this));
+    this._element.addEventListener(`click`, this._onEditButtonClick);
   }
 
   render() {
@@ -52,8 +53,7 @@ export class Point {
   }
 
   unbind() {
-    this._element.querySelector(`.trip-point`)
-      .removeEventListener(`click`, this._onEditButtonClick.bind(this));
+    this._element.removeEventListener(`click`, this._onEditButtonClick);
   }
 
   unrender() {

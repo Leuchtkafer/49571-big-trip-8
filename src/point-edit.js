@@ -11,6 +11,7 @@ export class PointEdit {
     this._time = data.time;
     this._price = data.price;
     this._element = null;
+    this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
     this._onSubmit = null;
   }
   _onSubmitButtonClick(evt) {
@@ -140,8 +141,8 @@ export class PointEdit {
       </article>`;
   }
   bind() {
-    this._element.querySelector(`.point__button.point__button--save`).addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
-    this._element.querySelector(`.point__button`).addEventListener(`reset`, this._onSubmitButtonClick.bind(this));
+    this._element.querySelector(`.point__button.point__button--save`).addEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.point__button`).addEventListener(`reset`, this._onSubmitButtonClick);
   }
   render() {
     this._element = createElement(this.template);
@@ -153,7 +154,7 @@ export class PointEdit {
     this._element = null;
   }
   unbind() {
-    this._element.querySelector(`.point__button.point__button--save`).removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
-    this._element.querySelector(`.point__button`).removeEventListener(`reset`, this._onSubmitButtonClick.bind(this));
+    this._element.querySelector(`.point__button.point__button--save`).removeEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.point__button`).removeEventListener(`reset`, this._onSubmitButtonClick);
   }
 }
