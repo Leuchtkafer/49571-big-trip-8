@@ -21,7 +21,13 @@ const createPoint = (data) => {
     tripPoints.replaceChild(pointEdit.element, point.element);
     point.unrender();
   };
-  pointEdit.onSubmit = () => {
+
+  pointEdit.onSubmit = (newObject) => {
+    point.type = newObject.type;
+    point.time = newObject.time;
+    point.price = newObject.price;
+    point.offers = newObject.offers;
+    point.update(point);
     point.render();
     tripPoints.replaceChild(point.element, pointEdit.element);
     pointEdit.unrender();

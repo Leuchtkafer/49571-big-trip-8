@@ -1,4 +1,6 @@
 import {Component} from './component.js';
+import {Type} from './data.js';
+import moment from 'moment';
 
 export class Point extends Component {
   constructor(data) {
@@ -25,10 +27,10 @@ export class Point extends Component {
   }
   get template() {
     return `<article class="trip-point">
-          <i class="trip-icon">${this._type[Object.keys(this._type)[Math.floor(Math.random() * Object.keys(this._type).length)]]}</i>
+          <i class="trip-icon">${Type[this._type]}</i>
           <h3 class="trip-point__title">${Object.keys(this._type)[Math.floor(Math.random() * Object.keys(this._type).length)]}</h3>
           <p class="trip-point__schedule">
-            <span class="trip-point__timetable">${this._time}</span>
+            <span class="trip-point__timetable">${moment(this._date).format(`hh:mm`)}</span>
             <span class="trip-point__duration">1h 30m</span>
           </p>
           <p class="trip-point__price">&euro;&nbsp;${this._price}</p>
@@ -44,5 +46,11 @@ export class Point extends Component {
   }
   unbind() {
     this._element.removeEventListener(`click`, this._onEditButtonClick);
+  }
+  update(data) {
+    this._type = data.type;
+    this._time = data.time;
+    this._price = data.price;
+    this._offers = data.offers;
   }
 }
