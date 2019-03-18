@@ -22,7 +22,7 @@ export class PointEdit extends Component {
   }
   _processForm(formData) {
     const entry = {
-      type: {},
+      type: ``,
       time: ``,
       price: ``,
       offers: new Set(),

@@ -27,7 +27,7 @@ export class Point extends Component {
   }
   get template() {
     return `<article class="trip-point">
-          <i class="trip-icon">${Type[this._type]}</i>
+          <i class="trip-icon">${Type[Type.getRandomType()]}</i>
           <h3 class="trip-point__title">${Object.keys(this._type)[Math.floor(Math.random() * Object.keys(this._type).length)]}</h3>
           <p class="trip-point__schedule">
             <span class="trip-point__timetable">${moment(this._date).format(`hh:mm`)}</span>

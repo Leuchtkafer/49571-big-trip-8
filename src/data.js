@@ -45,6 +45,9 @@ const Type = {
   'check-in': `🏨`,
   'sightseeing': `🏛️`,
   'restaurant': `🍴`,
+  getRandomType() {
+    return Object.keys(this)[Math.floor(Math.random() * Object.keys(this).length)];
+  }
 };
 
 export {getPoint, Type};
