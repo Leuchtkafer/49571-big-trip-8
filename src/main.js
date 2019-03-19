@@ -25,6 +25,7 @@ const createPoint = (data) => {
   pointEdit.onSubmit = (newObject) => {
     point.type = newObject.type;
     point.time = newObject.time;
+    point.date = newObject.date;
     point.price = newObject.price;
     point.offers = newObject.offers;
     point.update(point);

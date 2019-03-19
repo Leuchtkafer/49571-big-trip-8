@@ -1,16 +1,7 @@
+import moment from 'moment';
+
 const getPoint = () => ({
-  type: {
-    'taxi': `🚕`,
-    'bus': `🚌`,
-    'train': `🚂`,
-    'ship': `🛳️`,
-    'transport': `🚊`,
-    'drive': `🚗`,
-    'flight': `✈️`,
-    'check-in': `🏨`,
-    'sightseeing': `🏛️`,
-    'restaurant': `🍴`,
-  },
+  type: getRandomType(),
   city: [
     `Amsterdam`,
     `Geneva`,
@@ -29,8 +20,8 @@ const getPoint = () => ({
     `keks`,
   ]),
   description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus`,
-  date: Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
-  time: Math.floor(Math.random() * 24),
+  date: moment(Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000).format(`DD MMMM`),
+  time: moment(Math.floor(Math.random() * 24)).format(`hh:mm`),
   price: Math.floor(Math.random() * 20),
 });
 
@@ -43,11 +34,12 @@ const Type = {
   'drive': `🚗`,
   'flight': `✈️`,
   'check-in': `🏨`,
-  'sightseeing': `🏛️`,
+  'sight-seeing': `🏛️`,
   'restaurant': `🍴`,
-  getRandomType() {
-    return Object.keys(this)[Math.floor(Math.random() * Object.keys(this).length)];
-  }
+};
+
+const getRandomType = () => {
+  return Object.keys(Type)[Math.floor(Math.random() * Object.keys(Type).length)];
 };
 
 export {getPoint, Type};

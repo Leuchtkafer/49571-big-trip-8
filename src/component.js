@@ -24,5 +24,6 @@ export class Component {
   }
   bind() {}
   unbind() {}
+  update() {}
 }
 

@@ -14,6 +14,7 @@ export class PointEdit extends Component {
     this._time = data.time;
     this._price = data.price;
     this._onSubmit = null;
+    this._onChangeType = this._onChangeType.bind(this);
     this._onChangeDate = this._onChangeDate.bind(this);
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
     this._state = {
@@ -43,6 +44,13 @@ export class PointEdit extends Component {
     this.unbind();
     this.bind();
   }
+  _onChangeType(evt) {
+    const travelTypeChecked = document.querySelector(`.travel-way__label`);
+    if (evt.target.className === `travel-way__select-label`) {
+      let inputChecked = evt.target.previousElementSibling.value;
+      travelTypeChecked.innerHTML = Type[inputChecked];
+    }
+  }
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
     const formData = new FormData(this._element.getElementsByTagName(`form`));
@@ -61,7 +69,7 @@ export class PointEdit extends Component {
           <header class="point__header">
             <label class="point__date">
               choose day
-              <input class="point__input" type="text" placeholder="MAR 18" name="day">
+              <input class="point__input" type="text" placeholder="MAR 18" name="day" value="${this._date}">
             </label>
       
             <div class="travel-way">
@@ -71,24 +79,26 @@ export class PointEdit extends Component {
       
               <div class="travel-way__select">
                 <div class="travel-way__select-group">
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-taxi" name="travel-way" value="taxi" ${this._type[`taxi`] && `checked`}>
+                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-taxi" name="travel-way" value="taxi" 
+                  ${Type[this._type] === `taxi` && `checked`}>
                   <label class="travel-way__select-label" for="travel-way-taxi">🚕 taxi</label>
       
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-bus" name="travel-way" value="bus" ${this._type[`bus`] && `checked`}>
+                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-bus" name="travel-way" value="bus" 
+                  ${Type[this._type] === `bus` && `checked`}>
                   <label class="travel-way__select-label" for="travel-way-bus">🚌 bus</label>
       
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-train" name="travel-way" value="train" ${this._type[`train`] && `checked`}>
+                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-train" name="travel-way" value="train" ${Type[this._type] === `train` && `checked`}>
                   <label class="travel-way__select-label" for="travel-way-train">🚂 train</label>
       
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travel-way" value="train" ${this._type[`flight`] && `checked`}>
+                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travel-way" value="flight" ${Type[this._type] === `flight` && `checked`}>
                   <label class="travel-way__select-label" for="travel-way-flight">✈️ flight</label>
                 </div>
       
                 <div class="travel-way__select-group">
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-check-in" name="travel-way" value="check-in" ${this._type[`check-in`] && `checked`}>
+                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-check-in" name="travel-way" value="check-in" ${Type[this._type] === `check-in` && `checked`}>
                   <label class="travel-way__select-label" for="travel-way-check-in">🏨 check-in</label>
       
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-sightseeing" name="travel-way" value="sight-seeing" ${this._type[`sightseeing`] && `checked`}>
+                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-sightseeing" name="travel-way" value="sight-seeing" ${Type[this._type] === `sightseeing` && `checked`}>
                   <label class="travel-way__select-label" for="travel-way-sightseeing">🏛 sightseeing</label>
                 </div>
               </div>
@@ -113,7 +123,7 @@ export class PointEdit extends Component {
             <label class="point__price">
               write price
               <span class="point__price-currency">€</span>
-              <input class="point__input" type="text" value="160" name="price">
+              <input class="point__input" type="text" value="${this._price}" name="price">
             </label>
       
             <div class="point__buttons">
@@ -170,22 +180,25 @@ export class PointEdit extends Component {
       </article>`;
   }
   bind() {
-    this._element.querySelector(`.point__button.point__button--save`).addEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.point__button.point__button--save`).addEventListener(`click`, this._onSubmitButtonClick);
     this._element.querySelector(`.point__date`).firstElementChild.addEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.point__time`).firstElementChild.addEventListener(`click`, this._onChangeDate);
+    this._element.querySelector(`.travel-way__select`).addEventListener(`click`, this._onChangeType);
 
     if (this._state.isDate) {
       flatpickr(this._element.querySelector(`.point__date`).firstElementChild, {altInput: true, altFormat: `j F`, dateFormat: `j F`});
-      flatpickr(this._element.querySelector(`.point__time`).firstElementChild, {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`});
+      flatpickr(this._element.querySelector(`.point__time`).firstElementChild, {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
     }
   }
   unbind() {
-    this._element.querySelector(`.point__button.point__button--save`).removeEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.point__button.point__button--save`).removeEventListener(`click`, this._onSubmitButtonClick);
     this._element.querySelector(`.point__date`).firstElementChild.removeEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.point__time`).firstElementChild.removeEventListener(`click`, this._onChangeDate);
+    this._element.querySelector(`.travel-way__select`).removeEventListener(`click`, this._onChangeType);
   }
   update(data) {
     this._type = data.type;
+    this._date = data.date;
     this._time = data.time;
     this._price = data.price;
     this._offers = data.offers;
@@ -197,6 +210,9 @@ export class PointEdit extends Component {
       },
       time: (value) => {
         target.time = value;
+      },
+      date: (value) => {
+        target.date = value;
       },
       price: (value) => {
         target.price = value;
