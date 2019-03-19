@@ -6,10 +6,9 @@ export class PointEdit extends Component {
   constructor(data) {
     super();
     this._type = data.type;
-    this._city = data.city;
     this._offers = data.offers;
-    this._picture = data.picture;
     this._description = data.description;
+    this._picture = data.picture;
     this._date = data.date;
     this._time = data.time;
     this._price = data.price;
@@ -25,7 +24,8 @@ export class PointEdit extends Component {
     const entry = {
       type: ``,
       time: ``,
-      price: ``,
+      date: ``,
+      price: null,
       offers: new Set(),
     };
 
@@ -52,9 +52,9 @@ export class PointEdit extends Component {
     }
   }
   _onSubmitButtonClick(evt) {
-    evt.preventDefault();
-    const formData = new FormData(this._element.getElementsByTagName(`form`));
+    const formData = new FormData(this._element.querySelector(`form`));
     const newData = this._processForm(formData);
+    evt.preventDefault();
     if (typeof this._onSubmit === `function`) {
       this._onSubmit(newData);
     }
@@ -167,11 +167,7 @@ export class PointEdit extends Component {
               <h3 class="point__details-title">Destination</h3>
               <p class="point__destination-text">${this._description}</p>
               <div class="point__destination-images">
-                <img src="http://picsum.photos/330/140?r=123" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/300/200?r=1234" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/300/100?r=12345" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/200/300?r=123456" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/100/300?r=1234567" alt="picture from place" class="point__destination-image">
+                <img src="${this._picture}" alt="picture from place" class="point__destination-image">
               </div>
             </section>
             <input type="hidden" class="point__total-price" name="total-price" value="">
@@ -205,19 +201,19 @@ export class PointEdit extends Component {
   }
   static createMapper(target) {
     return {
-      type: (value) => {
+      'travel-way': (value) => {
         target.type = value;
       },
-      time: (value) => {
+      'time': (value) => {
         target.time = value;
       },
-      date: (value) => {
+      'day': (value) => {
         target.date = value;
       },
-      price: (value) => {
+      'price': (value) => {
         target.price = value;
       },
-      offers: (value) => target.offers.add(value),
+      'offer': (value) => target.offers.add(value),
     };
   }
 }

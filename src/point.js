@@ -5,13 +5,12 @@ export class Point extends Component {
   constructor(data) {
     super();
     this._type = data.type;
-    this._city = data.city;
     this._offers = data.offers;
-    this._picture = data.picture;
     this._description = data.description;
     this._date = data.date;
     this._time = data.time;
     this._price = data.price;
+    this._offers = data.offers;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
 
     this._onEdit = null;
@@ -48,6 +47,7 @@ export class Point extends Component {
   }
   update(data) {
     this._type = data.type;
+    this._date = data.date;
     this._time = data.time;
     this._price = data.price;
     this._offers = data.offers;

@@ -393,7 +393,6 @@ input[type=radio]:checked + .trip-sorting__item {
 }
 .point__date {
   font-size: 0;
-  width: 55px;
   margin-right: 5px;
 }
 .point__input {
