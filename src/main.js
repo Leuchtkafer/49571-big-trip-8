@@ -11,8 +11,8 @@ const filtersArray = [`everything`, `future`, `past`];
 const renderFilters = filtersArray.map((item) => makeFilter(item)).join(``);
 
 const createPoint = (data) => {
-  const point = new Point(getPoint(data));
-  const pointEdit = new PointEdit(getPoint(data));
+  const point = new Point(data);
+  const pointEdit = new PointEdit(data);
 
   tripPoints.appendChild(point.render());
 
