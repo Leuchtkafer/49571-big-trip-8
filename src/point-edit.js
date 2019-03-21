@@ -79,6 +79,7 @@ export class PointEdit extends Component {
       
               <div class="travel-way__select">
                 <div class="travel-way__select-group">
+                  
                   <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-taxi" name="travel-way" value="taxi" 
                   ${this._type === `taxi` ? `checked` : ``}>
                   <label class="travel-way__select-label" for="travel-way-taxi">🚕 taxi</label>
@@ -89,6 +90,15 @@ export class PointEdit extends Component {
       
                   <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-train" name="travel-way" value="train" ${this._type === `train` ? `checked` : ``}>
                   <label class="travel-way__select-label" for="travel-way-train">🚂 train</label>
+                  
+                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-ship" name="travel-way" value="ship" ${this._type === `ship` ? `checked` : ``}}>
+                  <label class="travel-way__select-label" for="travel-way-ship">🛳 ship</label>
+                  
+                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-transport" name="travel-way" value="transport" ${this._type === `transport` ? `checked` : ``}}>
+                  <label class="travel-way__select-label" for="travel-way-transport">🚊 transport</label>
+                  
+                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-drive" name="travel-way" value="drive" ${this._type === `drive` ? `checked` : ``}}>
+                  <label class="travel-way__select-label" for="travel-way-drive">🚗 drive</label>
       
                   <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travel-way" value="flight" ${this._type === `flight` ? `checked` : ``}}>
                   <label class="travel-way__select-label" for="travel-way-flight">✈️ flight</label>
