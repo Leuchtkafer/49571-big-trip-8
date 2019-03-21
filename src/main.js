@@ -11,8 +11,8 @@ const filtersArray = [`everything`, `future`, `past`];
 const renderFilters = filtersArray.map((item) => makeFilter(item)).join(``);
 
 const createPoint = (data) => {
-  const point = new Point(getPoint(data));
-  const pointEdit = new PointEdit(getPoint(data));
+  const point = new Point(data);
+  const pointEdit = new PointEdit(data);
 
   tripPoints.appendChild(point.render());
 
@@ -21,7 +21,14 @@ const createPoint = (data) => {
     tripPoints.replaceChild(pointEdit.element, point.element);
     point.unrender();
   };
-  pointEdit.onSubmit = () => {
+
+  pointEdit.onSubmit = (newObject) => {
+    point.type = newObject.type;
+    point.time = newObject.time;
+    point.date = newObject.date;
+    point.price = newObject.price;
+    point.offers = newObject.offers;
+    point.update(point);
     point.render();
     tripPoints.replaceChild(point.element, pointEdit.element);
     pointEdit.unrender();
