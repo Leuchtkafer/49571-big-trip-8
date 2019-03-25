@@ -13,9 +13,11 @@ export class PointEdit extends Component {
     this._time = data.time;
     this._price = data.price;
     this._onSubmit = null;
+    this._onDelete = null;
     this._onChangeType = this._onChangeType.bind(this);
     this._onChangeDate = this._onChangeDate.bind(this);
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
+    this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._state = {
       isDate: false,
     };
@@ -38,6 +40,11 @@ export class PointEdit extends Component {
       }
     }
     return entry;
+  }
+  _onDeleteButtonClick() {
+    if (typeof this._onSubmit === `function`) {
+      this._onDelete();
+    }
   }
   _onChangeDate() {
     this._state.isDate = !this._state.isDate;
@@ -62,6 +69,9 @@ export class PointEdit extends Component {
   }
   set onSubmit(fn) {
     this._onSubmit = fn;
+  }
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
   get template() {
     return `<article class="point">
@@ -130,7 +140,7 @@ export class PointEdit extends Component {
       
             <label class="point__time">
               choose time
-              <input class="point__input" type="text" value="00:00 — 00:00" name="time" placeholder="00:00 — 00:00">
+              <input class="point__input" type="text" value="${this._time}" name="time" placeholder="00:00 — 00:00">
             </label>
       
             <label class="point__price">
@@ -141,7 +151,7 @@ export class PointEdit extends Component {
       
             <div class="point__buttons">
               <button class="point__button point__button--save">Save</button>
-              <button class="point__button" type="reset">Delete</button>
+              <button class="point__button point__button--delete" type="reset">Delete</button>
             </div>
       
             <div class="paint__favorite-wrap">
@@ -155,25 +165,12 @@ export class PointEdit extends Component {
               <h3 class="point__details-title">offers</h3>
       
               <div class="point__offers-wrap">
-                <input class="point__offers-input visually-hidden" type="checkbox" id="add-luggage" name="offer" value="add-luggage">
-                <label for="add-luggage" class="point__offers-label">
-                  <span class="point__offer-service">Add luggage</span> + €<span class="point__offer-price">30</span>
-                </label>
-      
-                <input class="point__offers-input visually-hidden" type="checkbox" id="switch-to-comfort-class" name="offer" value="switch-to-comfort-class">
-                <label for="switch-to-comfort-class" class="point__offers-label">
-                  <span class="point__offer-service">Switch to comfort class</span> + €<span class="point__offer-price">100</span>
-                </label>
-      
-                <input class="point__offers-input visually-hidden" type="checkbox" id="add-meal" name="offer" value="add-meal">
-                <label for="add-meal" class="point__offers-label">
-                  <span class="point__offer-service">Add meal </span> + €<span class="point__offer-price">15</span>
-                </label>
-      
-                <input class="point__offers-input visually-hidden" type="checkbox" id="choose-seats" name="offer" value="choose-seats">
-                <label for="choose-seats" class="point__offers-label">
-                  <span class="point__offer-service">Choose seats</span> + €<span class="point__offer-price">5</span>
-                </label>
+              ${[...this._offers].map((it) => `                
+                <input class="point__offers-input visually-hidden" type="checkbox" id="${it.split(` `).join(`-`).toLocaleLowerCase()}" name="offer" value="${it.split(` `).join(`-`).toLocaleLowerCase()}" ${it === it && `checked`}>
+                <label for="it" class="point__offers-label">
+                  <span class="point__offer-service">${it}</span> + €<span class="point__offer-price">20</span>
+                </label>`).join(``)}
+              
               </div>
             </section>
             <section class="point__destination">
@@ -189,10 +186,11 @@ export class PointEdit extends Component {
       </article>`;
   }
   bind() {
-    this._element.querySelector(`.point__button.point__button--save`).addEventListener(`click`, this._onSubmitButtonClick);
+    this._element.querySelector(`.point__button--save`).addEventListener(`click`, this._onSubmitButtonClick);
     this._element.querySelector(`.point__date`).firstElementChild.addEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.point__time`).firstElementChild.addEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.travel-way__select`).addEventListener(`click`, this._onChangeType);
+    this._element.querySelector(`.point__button--delete`).addEventListener(`click`, this._onDeleteButtonClick);
 
     if (this._state.isDate) {
       flatpickr(this._element.querySelector(`.point__date`).firstElementChild, {altInput: true, altFormat: `j F`, dateFormat: `j F`});
@@ -200,10 +198,11 @@ export class PointEdit extends Component {
     }
   }
   unbind() {
-    this._element.querySelector(`.point__button.point__button--save`).removeEventListener(`click`, this._onSubmitButtonClick);
+    this._element.querySelector(`.point__button--save`).removeEventListener(`click`, this._onSubmitButtonClick);
     this._element.querySelector(`.point__date`).firstElementChild.removeEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.point__time`).firstElementChild.removeEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.travel-way__select`).removeEventListener(`click`, this._onChangeType);
+    this._element.querySelector(`.point__button--delete`).removeEventListener(`click`, this._onDeleteButtonClick);
   }
   update(data) {
     this._type = data.type;

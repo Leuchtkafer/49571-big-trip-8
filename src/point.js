@@ -33,7 +33,7 @@ export class Point extends Component {
           </p>
           <p class="trip-point__price">&euro;&nbsp;${this._price}</p>
           <ul class="trip-point__offers">
-                ${[...this._offers].splice(Math.floor(Math.random() * 5), 2).map((it) => `<li>
+                ${[...this._offers].map((it) => `<li>
               <button class="trip-point__offer">${it} +&euro;&nbsp;20</button>
             </li>`).join(``)}
           </ul>
