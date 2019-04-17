@@ -1,18 +1,22 @@
 import {Component} from './component.js';
-import {Type} from './data.js';
+import {Type} from './model-point.js';
 
 export class Point extends Component {
   constructor(data) {
     super();
     this._type = data.type;
-    this._offers = data.offers;
-    this._description = data.description;
     this._date = data.date;
-    this._time = data.time;
+    this._time = {
+      start: data.dateFrom,
+      end: data.dateTo,
+      duration: data.duration,
+    };
     this._price = data.price;
     this._offers = data.offers;
+    this._id = data.id;
+    this._destination = data.destination;
+    this._isFavorite = data.isFavorite;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
-
     this._onEdit = null;
   }
   _onEditButtonClick() {
@@ -25,17 +29,18 @@ export class Point extends Component {
   }
   get template() {
     return `<article class="trip-point">
+
           <i class="trip-icon">${Type[this._type]}</i>
           <h3 class="trip-point__title">${this._type}</h3>
           <p class="trip-point__schedule">
-            <span class="trip-point__timetable">${this._time}</span>
-            <span class="trip-point__duration">1h 30m</span>
+            <span class="trip-point__timetable">${this._time.start} - ${this._time.end}</span>
+            <span class="trip-point__duration">${this._time.duration}</span>
           </p>
           <p class="trip-point__price">&euro;&nbsp;${this._price}</p>
           <ul class="trip-point__offers">
-                ${[...this._offers].map((it) => `<li>
-              <button class="trip-point__offer">${it} +&euro;&nbsp;20</button>
-            </li>`).join(``)}
+                ${this._offers ? [...this._offers].map((it) => `<li>
+              <button class="trip-point__offer">${it.name} &euro;&nbsp;${it.price}</button>
+            </li>`).join(``) : []}
           </ul>
         </article>`;
   }
@@ -48,8 +53,12 @@ export class Point extends Component {
   update(data) {
     this._type = data.type;
     this._date = data.date;
-    this._time = data.time;
+    this._time.start = data.dateFrom;
+    this._time.end = data.dateTo;
     this._price = data.price;
     this._offers = data.offers;
+    this._isFavorite = data.isFavorite;
+    this._id = data.id;
+    this._destination = data.destination;
   }
 }

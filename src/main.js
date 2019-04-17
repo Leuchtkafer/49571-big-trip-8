@@ -1,11 +1,9 @@
-import {getPoint, filters} from './data.js';
 import {Point} from './point.js';
 import {PointEdit} from './point-edit.js';
-import {renderHtmlString, getRandom} from './utils.js';
-import {Filter} from './filter.js';
+import {Filter, filters} from './filter.js';
 import {createMoneyChart, createTransportChart, createSpendChart} from './statistic.js';
 import moment from 'moment';
-// import flatpickr from 'flatpickr';
+import {API} from './api.js';
 
 const tripFilter = document.querySelector(`.trip-filter`);
 const tripPoints = document.querySelector(`.trip-day__items`);
@@ -16,13 +14,14 @@ const timeSpendCtx = document.querySelector(`.statistic__time-spend`);
 
 const statistic = document.querySelector(`.statistic`);
 const main = document.querySelector(`.main`);
-// const statisticMoneyWrap = document.querySelector(`.statistic__item--money`);
-// const statisticTransportWrap = document.querySelector(`.statistic__item--transport`);
-// const statisticSpendWrap = document.querySelector(`.statistic__item--time-spend`);
 const statisticMoney = document.querySelector(`.statistic__money`);
 const statisticTransport = document.querySelector(`.statistic__transport`);
 const statisticSpend = document.querySelector(`.statistic__time-spend`);
 const statisticButton = document.querySelector(`.view-switch__item--stats`);
+
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
+const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
+const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
 const showStatistic = () => {
   main.classList.add(`visually-hidden`);
@@ -32,6 +31,8 @@ const showStatistic = () => {
   createSpendChart(statisticSpend);
 };
 
+const commonFilteredTasks = {};
+
 const BAR_HEIGHT = 55;
 moneyCtx.height = BAR_HEIGHT * 6;
 transportCtx.height = BAR_HEIGHT * 4;
@@ -39,50 +40,49 @@ timeSpendCtx.height = BAR_HEIGHT * 4;
 
 statisticButton.addEventListener(`click`, showStatistic);
 
-const renderFilters = (data, points) => {
-  tripFilter.innerHTML = ``;
-  data.forEach((filter) => {
-    const filterComponent = new Filter(filter);
-    tripFilter.appendChild(filterComponent.render());
-
-    filterComponent.onFilter = () => {
-      switch (filterComponent._type) {
-        case `everything`:
-          return renderPoints(points);
-
-        case `future`:
-          return renderPoints(points.filter((it) => it.date > moment(Date.now()).format(`DD MMMM`)));
-
-        case `past`:
-          return renderPoints(points.filter((it) => it.date < moment(Date.now()).format(`DD MMMM`)));
-      }
-      return renderPoints(points);
-    };
-    return renderPoints(points);
-  });
-};
-
-const deletePoint = (points, i) => {
-  points.splice(i, 1);
-  return renderPoints(points);
-};
-
-const addPoints = (number) => {
-  let points = [];
-  for (let i = 0; i < number; i++) {
-    points.push(getPoint(i));
+const filterTasks = (filter, filteredTasks) => {
+  switch (filter) {
+    case `past`:
+      filteredTasks = filteredTasks.filter((it) => moment(it.dueDate).format(`DD MMMM h:mm`) < moment(Date.now()).format(`DD MMMM h:mm`));
+      break;
+    case `future`:
+      filteredTasks = filteredTasks.filter((it) => moment(it.dueDate).format(`DD MMMM h:mm`) > moment(Date.now()).format(`DD MMMM h:mm`));
+      break;
   }
-  return points;
+  commonFilteredTasks[filter] = filteredTasks;
 };
 
-const renderPoints = (points) => {
+const renderFilters = (points) => {
+  tripFilter.innerHTML = ``;
+  let filteredTasks = points.slice();
+  filters.forEach((filter, index) => {
+    filterTasks(filter, filteredTasks);
+    const filterComponent = new Filter({
+      type: filter,
+      amount: commonFilteredTasks[filter].length,
+      isChecked: index === 0,
+      isDisabled: commonFilteredTasks[filter].length === 0
+    });
+    tripFilter.appendChild(filterComponent.render());
+    filterComponent.onFilter = () => {
+      if (commonFilteredTasks[filter].length > 0) {
+        renderPoints(commonFilteredTasks[filterComponent._type]);
+      }
+    };
+  });
+
+  renderPoints(commonFilteredTasks.everything);
+};
+
+const renderPoints = (data, destinations, offers) => {
   tripPoints.innerHTML = ``;
-  for (let i = 0; i < points.length; i++) {
-    const point = points[i];
+  data.forEach((point) => {
     const pointComponent = new Point(point);
     const pointEditComponent = new PointEdit(point);
     pointComponent.render();
     tripPoints.appendChild(pointComponent.element);
+    pointEditComponent.allDestinations = destinations;
+    pointEditComponent.allOffers = offers;
 
     pointComponent.onEdit = () => {
       pointEditComponent.render();
@@ -91,23 +91,85 @@ const renderPoints = (points) => {
     };
 
     pointEditComponent.onSubmit = (newObject) => {
+      pointEditComponent.block(`save`);
+
+      load(true)
+        .then(() => {
+          pointEditComponent.unblock(`save`);
+          pointComponent.update(point);
+          pointComponent.render();
+          tripPoints.replaceChild(pointComponent.element, pointEditComponent.element);
+          pointEditComponent.unrender();
+        })
+        .catch(() => {
+          pointEditComponent.shake();
+          pointEditComponent.unblock(`save`);
+        });
+
       point.type = newObject.type;
       point.time = newObject.time;
       point.date = newObject.date;
+      point.destination = newObject.destination;
       point.price = newObject.price;
       point.offers = newObject.offers;
-      pointComponent.update(point);
-      pointComponent.render();
-      tripPoints.replaceChild(pointComponent.element, pointEditComponent.element);
-      pointEditComponent.unrender();
+      point.isFavorite = newObject.isFavorite;
+
+      api.updateTask({id: point.id, data: point.toRAW()})
+        .then((newTask) => {
+          pointComponent.update(newTask);
+          pointComponent.render();
+          tripPoints.replaceChild(pointComponent.element, pointEditComponent.element);
+          pointEditComponent.unrender();
+          renderFilters(data);
+        });
     };
 
-    pointEditComponent.onDelete = () => {
-      deletePoint(points, i);
-      pointEditComponent.unrender();
-    };
-  }
+    pointEditComponent.onDelete = (({id}) => {
+      pointEditComponent.block(`delete`);
+      api.deleteTask({id})
+        .then(() => api.getPoints())
+        .then(getServerData)
+        .then(renderPoints)
+        .then(renderFilters)
+        .catch(() => {
+          pointEditComponent.shake();
+          pointEditComponent.unblock(`delete`);
+        });
+    });
+  });
+
+  return data;
 };
 
-let points = addPoints(getRandom());
-renderHtmlString(tripFilter, renderFilters(filters, points));
+const load = (isSuccess) => {
+  return new Promise((res, rej) => {
+    setTimeout(isSuccess ? res : rej, 2000);
+  });
+};
+
+const getServerData = () => {
+  let destinations = [];
+  let offers = [];
+  api.getDestinations()
+    .then((data) => {
+      destinations = data;
+      return destinations;
+    });
+
+  api.getOffers()
+    .then((data) => {
+      offers = data;
+      return offers;
+    });
+
+  api.getPoints()
+    .then((points) => {
+      renderFilters(points);
+      renderPoints(points, destinations, offers);
+    })
+    .catch(() => {
+      tripPoints.innerText = `Something went wrong while loading your tasks. Check your connection or try again later`;
+    });
+};
+
+getServerData();
