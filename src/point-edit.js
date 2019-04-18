@@ -11,10 +11,7 @@ export class PointEdit extends Component {
     this._pictures = data.pictures;
     this._description = data.description;
     this._date = data.date;
-    this._time = {
-      start: data.dateFrom,
-      end: data.dateTo,
-    };
+    this._time = data.time;
     this._isFavorite = data.isFavorite;
     this._price = data.price;
     this._onSubmit = null;
@@ -76,7 +73,6 @@ export class PointEdit extends Component {
   _onChangeType(evt) {
     const value = evt.target.value;
     const currentOffers = this._allOffers.filter((offer) => offer.type === value)[0];
-
     this._type = value;
     this._offers = currentOffers.offers;
     this.unbind();
@@ -278,8 +274,7 @@ export class PointEdit extends Component {
   update(data) {
     this._type = data.type;
     this._date = data.date;
-    this._time.start = data.dateFrom;
-    this._time.end = data.dateTo;
+    this._time = data.time;
     this._price = data.price;
     this._offers = data.offers;
     this._destination = data.destination;

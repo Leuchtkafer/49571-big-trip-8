@@ -11,10 +11,8 @@ class Filter extends Component {
   constructor(data) {
     super();
     this._type = data.type || `noname`;
-    this._amount = data.amount || 0;
     this._isChecked = data.isChecked || false;
     this._isDisabled = data.isDisabled || false;
-
     this._onFilter = this._onFilter.bind(this);
   }
 
@@ -47,7 +45,6 @@ class Filter extends Component {
     if (checked) {
       this._isChecked = checked;
     }
-
     this._element = createElement(this.template);
     this.bind();
     return this._element;

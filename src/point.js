@@ -6,14 +6,11 @@ export class Point extends Component {
     super();
     this._type = data.type;
     this._date = data.date;
-    this._time = {
-      start: data.dateFrom,
-      end: data.dateTo,
-      duration: data.duration,
-    };
+    this._time = data.time;
     this._price = data.price;
     this._offers = data.offers;
     this._id = data.id;
+    this._duration = data.duration;
     this._destination = data.destination;
     this._isFavorite = data.isFavorite;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
@@ -34,7 +31,7 @@ export class Point extends Component {
           <h3 class="trip-point__title">${this._type}</h3>
           <p class="trip-point__schedule">
             <span class="trip-point__timetable">${this._time.start} - ${this._time.end}</span>
-            <span class="trip-point__duration">${this._time.duration}</span>
+            <span class="trip-point__duration">${this._duration}</span>
           </p>
           <p class="trip-point__price">&euro;&nbsp;${this._price}</p>
           <ul class="trip-point__offers">
@@ -53,8 +50,7 @@ export class Point extends Component {
   update(data) {
     this._type = data.type;
     this._date = data.date;
-    this._time.start = data.dateFrom;
-    this._time.end = data.dateTo;
+    this._time = data.time;
     this._price = data.price;
     this._offers = data.offers;
     this._isFavorite = data.isFavorite;

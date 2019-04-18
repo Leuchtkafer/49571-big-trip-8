@@ -43,10 +43,10 @@ statisticButton.addEventListener(`click`, showStatistic);
 const filterTasks = (filter, filteredTasks) => {
   switch (filter) {
     case `past`:
-      filteredTasks = filteredTasks.filter((it) => moment(it.dueDate).format(`DD MMMM h:mm`) < moment(Date.now()).format(`DD MMMM h:mm`));
+      filteredTasks = filteredTasks.filter((it) => moment(it.date).format(`DD MMMM h:mm`) < moment(Date.now()).format(`DD MMMM h:mm`));
       break;
     case `future`:
-      filteredTasks = filteredTasks.filter((it) => moment(it.dueDate).format(`DD MMMM h:mm`) > moment(Date.now()).format(`DD MMMM h:mm`));
+      filteredTasks = filteredTasks.filter((it) => moment(it.date).format(`DD MMMM h:mm`) > moment(Date.now()).format(`DD MMMM h:mm`));
       break;
   }
   commonFilteredTasks[filter] = filteredTasks;
@@ -59,7 +59,6 @@ const renderFilters = (points) => {
     filterTasks(filter, filteredTasks);
     const filterComponent = new Filter({
       type: filter,
-      amount: commonFilteredTasks[filter].length,
       isChecked: index === 0,
       isDisabled: commonFilteredTasks[filter].length === 0
     });

@@ -4,8 +4,10 @@ class ModelPoint {
   constructor(data) {
     this.id = data[`id`];
     this.type = data[`type`];
-    this.dateFrom = moment(data[`date_from`]).format(`h:mm`);
-    this.dateTo = moment(data[`date_to`]).format(`h:mm`);
+    this.time = {
+      start: moment(data[`date_to`]).format(`h:mm`),
+      end: moment(data[`date_from`]).format(`h:mm`),
+    };
     this.duration = moment(data[`date_from`] - data[`date_to`]).format(`h:mm`);
     this.price = data[`base_price`];
     this.destination = data.destination.name;
@@ -24,8 +26,8 @@ class ModelPoint {
     return {
       'id': this.id,
       'type': this.type,
-      'date_from': this.dateFrom,
-      'date_to': this.dateTo,
+      'date_from': this.time.start,
+      'date_to': this.time.end,
       'offers': this.offers.map((offer) => {
         return {
           title: offer.name,
