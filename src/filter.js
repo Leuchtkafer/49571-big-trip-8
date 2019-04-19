@@ -1,14 +1,18 @@
 import {createElement} from './utils.js';
 import {Component} from './component.js';
 
-export class Filter extends Component {
+const filters = [
+  `everything`,
+  `future`,
+  `past`,
+];
+
+class Filter extends Component {
   constructor(data) {
     super();
-    this._type = data.type;
-    this._amount = data.amount;
-    this._isChecked = data.checked;
-    this._isDisabled = data.disabled;
-
+    this._type = data.type || `noname`;
+    this._isChecked = data.isChecked || false;
+    this._isDisabled = data.isDisabled || false;
     this._onFilter = this._onFilter.bind(this);
   }
 
@@ -16,9 +20,9 @@ export class Filter extends Component {
     this._onFilter = fn;
   }
 
-  _onFilter() {
+  _onFilter(evt) {
     if (typeof this._onFilter === `function`) {
-      this._onFilter();
+      this._onFilter(evt);
     }
   }
 
@@ -31,13 +35,16 @@ export class Filter extends Component {
           name="filter"
           value="${this._type}"
           ${this._isChecked ? ` checked` : ``} 
-          ${this._isDisabled || this._amount <= 0 ? ` disabled` : ``} 
+          ${this._isDisabled ? `disabled` : ``}
         />
         <label class="trip-filter__item" for="filter-${this._type}">${this._type}</label>
         </span>`.trim();
   }
 
-  render() {
+  render(checked) {
+    if (checked) {
+      this._isChecked = checked;
+    }
     this._element = createElement(this.template);
     this.bind();
     return this._element;
@@ -51,3 +58,6 @@ export class Filter extends Component {
     this._element.querySelector(`.trip-filter__item`).removeEventListener(`click`, this._onFilter);
   }
 }
+
+
+export {Filter, filters};
