@@ -18,7 +18,6 @@ export class PointEdit extends Component {
     this._onDelete = null;
     this._id = data.id;
     this._allDestinations = null;
-    this._allOffers = null;
     this._onChangeType = this._onChangeType.bind(this);
     this._onChangeDate = this._onChangeDate.bind(this);
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
@@ -57,9 +56,6 @@ export class PointEdit extends Component {
     }
     return entry;
   }
-  _partialUpdate() {
-    this._element.innerHTML = this.template;
-  }
   _onDeleteButtonClick() {
     if (typeof this._onSubmit === `function`) {
       this._onDelete({id: this._id});
@@ -71,13 +67,20 @@ export class PointEdit extends Component {
     this.bind();
   }
   _onChangeType(evt) {
-    const value = evt.target.value;
-    const currentOffers = this._allOffers.filter((offer) => offer.type === value)[0];
-    this._type = value;
-    this._offers = currentOffers.offers;
-    this.unbind();
-    this._partialUpdate();
-    this.bind();
+    const destinationLabel = document.querySelector(`.point__destination-label`);
+    const travelWayLabel = document.querySelector(`.travel-way__label`);
+    const pointOffersWrap = document.querySelector(`.point__offers-wrap`);
+    let currentArray = [];
+    this._type = evt.target.value;
+    this._allOffers.map((it) => {
+      if (it.type === this._type) {
+        currentArray.push(it.offers);
+      }
+    });
+    this._offers = currentArray[0];
+    pointOffersWrap.innerHTML = `${this._getOffersElement(currentArray[0])}`;
+    destinationLabel.innerText = `${this._type[0].toUpperCase() + this._type.slice(1) + ` to`}`;
+    travelWayLabel.innerText = `${Type[this._type]}`;
   }
   _onSubmitButtonClick(evt) {
     const formData = new FormData(this._element.querySelector(`form`));
@@ -93,10 +96,14 @@ export class PointEdit extends Component {
     return strArray.map((word) => word.toLowerCase()).join(`-`);
   }
   _getOffersElement(offers) {
-    return offers.map((offer) => `<input class="point__offers-input visually-hidden" type="checkbox" id="${this._splitString(`${offer.name}`)}" name="offer" value="${this._splitString(`${offer.name}`)}" ${offer.checked ? `checked` : ``}>
+    if (offers !== undefined) {
+      return offers.map((offer) => `<input class="point__offers-input visually-hidden" type="checkbox" id="${this._splitString(`${offer.name}`)}" name="offer" value="${this._splitString(`${offer.name}`)}" ${offer.checked ? `checked` : ``}>
 			<label for="${this._splitString(`${offer.name}`)}" class="point__offers-label">
 				<span class="point__offer-service">${offer.name}</span> + €<span class="point__offer-price">${offer.price}</span>
           </label>`).join(``);
+    } else {
+      return ``;
+    }
   }
   set onSubmit(fn) {
     this._onSubmit = fn;
@@ -280,7 +287,7 @@ export class PointEdit extends Component {
     this._destination = data.destination;
   }
   shake() {
-    const ANIMATION_TIMEOUT = 600;
+    const ANIMATION_TIMEOUT = 100;
     this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
 
     setTimeout(() => {
