@@ -1,12 +1,16 @@
 import {Point} from './point.js';
 import {PointEdit} from './point-edit.js';
 import {Filter, filters} from './filter.js';
+import {Sort, sorts} from './sort.js';
 import {createMoneyChart, createTransportChart, createSpendChart} from './statistic.js';
 import moment from 'moment';
 import {API} from './api.js';
 
 const tripFilter = document.querySelector(`.trip-filter`);
 const tripPoints = document.querySelector(`.trip-day__items`);
+
+const sortPoints = document.querySelector(`.trip-sorting`);
+const tripOffers = document.querySelector(`.trip-sorting__item--offers`);
 
 const moneyCtx = document.querySelector(`.statistic__money`);
 const transportCtx = document.querySelector(`.statistic__transport`);
@@ -32,6 +36,7 @@ const showStatistic = () => {
 };
 
 const commonFilteredTasks = {};
+const commonSortedPoints = {};
 
 const BAR_HEIGHT = 55;
 moneyCtx.height = BAR_HEIGHT * 6;
@@ -51,6 +56,40 @@ const filterTasks = (filter, filteredTasks) => {
   }
   commonFilteredTasks[filter] = filteredTasks;
 };
+
+const sortingPoints = (sort, sortedPoints) => {
+  sortedPoints.sort((a, b) => {
+    switch (sort) {
+      case `time`:
+        return b.durationInMillisecond - a.durationInMillisecond;
+      case `price`:
+        return b.price - a.price;
+    }
+    return sortedPoints;
+  });
+  commonSortedPoints[sort] = sortedPoints;
+  return commonSortedPoints[sort];
+};
+
+const renderSorts = (points) => {
+  let sortedPoints = points.slice();
+  sorts.forEach((sort, index) => {
+    sortingPoints(sort, sortedPoints);
+    const sortComponent = new Sort({
+      type: sort,
+      isChecked: index === 0,
+    });
+    sortPoints.insertBefore(sortComponent.render(), tripOffers);
+    sortComponent.onSort = () => {
+      sortingPoints(sort, sortedPoints);
+      if (commonSortedPoints[sort].length > 0) {
+        renderPoints(commonSortedPoints[sortComponent._type]);
+      }
+    };
+  });
+  renderPoints(commonSortedPoints.event);
+};
+
 
 const renderFilters = (points) => {
   tripFilter.innerHTML = ``;
@@ -119,6 +158,7 @@ const renderPoints = (data, destinations, offers) => {
           pointComponent.render();
           tripPoints.replaceChild(pointComponent.element, pointEditComponent.element);
           pointEditComponent.unrender();
+          renderSorts(data);
           renderFilters(data);
         });
     };
@@ -129,6 +169,7 @@ const renderPoints = (data, destinations, offers) => {
         .then(() => api.getPoints())
         .then(getServerData)
         .then(renderPoints)
+        .then(renderSorts)
         .then(renderFilters)
         .catch(() => {
           pointEditComponent.shake();
@@ -163,6 +204,7 @@ const getServerData = () => {
 
   api.getPoints()
     .then((points) => {
+      renderSorts(points);
       renderFilters(points);
       renderPoints(points, destinations, offers);
     })

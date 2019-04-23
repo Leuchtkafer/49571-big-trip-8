@@ -8,6 +8,7 @@ class ModelPoint {
       start: moment(data[`date_to`]).format(`h:mm`),
       end: moment(data[`date_from`]).format(`h:mm`),
     };
+    this.durationInMillisecond = data[`date_to`] - data[`date_from`];
     this.duration = moment(data[`date_from`] - data[`date_to`]).format(`h:mm`);
     this.price = data[`base_price`];
     this.destination = data.destination.name;
